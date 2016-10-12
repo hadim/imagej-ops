@@ -124,15 +124,13 @@ public class MeshFeatureTests extends AbstractFeatureTest {
 		final RandomAccessibleInterval<BitType> img = (RandomAccessibleInterval<BitType>) ops.run(DefaultVoxelization3D.class,
 				mesh, ROI.max(0) - ROI.min(0) + 1, ROI.max(1) - ROI.min(1) + 1, ROI.max(2) - ROI.min(2) + 1);
 		final LabelRegion<String> result = createLabelRegion(img, 1, 1);
-		final LabelRegionRandomAccess<String> ra = ROI.randomAccess();
 		final LabelRegionCursor c = result.cursor();
 		while (c.hasNext()) {
 			c.next();
 			// move the voxels 
 			final long[] pos = new long[] { c.getLongPosition(0) + ROI.min(0), c.getLongPosition(1) + ROI.min(1),
 					c.getLongPosition(2) + ROI.min(2) };
-			ra.setPosition(pos);
-			assertTrue(ra.get().get());
+			assertTrue(mesh.getVertices().contains(new Vertex(pos[0], pos[1], pos[2])));
 		}
 	}
 
