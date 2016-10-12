@@ -31,34 +31,17 @@
 package net.imagej.ops.geom.geom3d;
 
 import net.imagej.ops.Ops;
-import net.imagej.ops.geom.GeometricOp;
+import net.imagej.ops.geom.AbstractSolidity;
 import net.imagej.ops.geom.geom3d.mesh.Mesh;
-import net.imagej.ops.special.hybrid.AbstractUnaryHybridCF;
-import net.imglib2.type.numeric.real.DoubleType;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
 /**
- * Generic implementation of {@code geom.boundaryPixelCount}.
- * 
  * @author Tim-Oliver Buchholz (University of Konstanz)
  */
-@Plugin(type = Ops.Geometric.VerticesCount.class,
-	label = "Geometric3D: Surface Pixel Count",
-	priority = Priority.VERY_HIGH_PRIORITY)
-public class VerticesCountMesh extends
-	AbstractUnaryHybridCF<Mesh, DoubleType> implements GeometricOp<Mesh, DoubleType>,
-	Ops.Geometric.VerticesCount
-{
-
-	@Override
-	public void compute1(final Mesh input, final DoubleType output) {
-		output.set(input.getVertices().size());
-	}
-	
-	@Override
-	public DoubleType createOutput(Mesh input) {
-		return new DoubleType();
-	}
+@Plugin(type = Ops.Geometric.Solidity.class,
+	label = "Geometric (3D): Solidity", priority = Priority.VERY_HIGH_PRIORITY)
+public class DefaultSolidityMesh extends AbstractSolidity<Mesh> {
+	// NB: Marker Interface
 }

@@ -46,7 +46,7 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = Ops.Geometric.VerticesCountConvexHull.class,
 	label = "Geometric (3D): Convex Hull Pixel Count",
 	priority = Priority.VERY_HIGH_PRIORITY)
-public class VerticesCountConvexHullMesh extends
+public class DefaultVerticesCountConvexHullMesh extends
 	AbstractUnaryHybridCF<Mesh, DoubleType>  implements
 	Ops.Geometric.VerticesCountConvexHull
 {

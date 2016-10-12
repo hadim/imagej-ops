@@ -34,7 +34,7 @@ import static org.junit.Assert.assertEquals;
 
 import net.imagej.ops.Ops;
 import net.imagej.ops.features.AbstractFeatureTest;
-import net.imagej.ops.geom.geom3d.VerticesCountConvexHullMesh;
+import net.imagej.ops.geom.geom3d.DefaultVerticesCountConvexHullMesh;
 import net.imagej.ops.geom.geom3d.DefaultBoundarySizeConvexHullMesh;
 import net.imagej.ops.geom.geom3d.DefaultConvexityMesh;
 import net.imagej.ops.geom.geom3d.DefaultCompactness;
@@ -44,10 +44,10 @@ import net.imagej.ops.geom.geom3d.DefaultMedianElongation;
 import net.imagej.ops.geom.geom3d.DefaultSpareness;
 import net.imagej.ops.geom.geom3d.DefaultSphericity;
 import net.imagej.ops.geom.geom3d.DefaultSurfaceArea;
-import net.imagej.ops.geom.geom3d.VerticesCountMesh;
-import net.imagej.ops.geom.geom3d.RugosityMesh;
-import net.imagej.ops.geom.geom3d.SizeConvexHullMesh;
-import net.imagej.ops.geom.geom3d.SolidityMesh;
+import net.imagej.ops.geom.geom3d.DefaultVerticesCountMesh;
+import net.imagej.ops.geom.geom3d.DefaultRugosityMesh;
+import net.imagej.ops.geom.geom3d.DefaultSizeConvexHullMesh;
+import net.imagej.ops.geom.geom3d.DefaultSolidityMesh;
 import net.imagej.ops.geom.geom3d.mesh.Mesh;
 import net.imglib2.RealPoint;
 import net.imglib2.roi.labeling.LabelRegion;
@@ -123,7 +123,7 @@ public class GeomTest extends AbstractFeatureTest {
 		// This test is just here for completeness.
 		// All input values of solidity are verified.
 		assertEquals(Ops.Geometric.Solidity.NAME, expected, ((DoubleType) ops.run(
-			SolidityMesh.class, mesh)).get(), AbstractFeatureTest.BIG_DELTA);
+			DefaultSolidityMesh.class, mesh)).get(), AbstractFeatureTest.BIG_DELTA);
 	}
 
 	@Test
@@ -132,7 +132,7 @@ public class GeomTest extends AbstractFeatureTest {
 		// This test is just here for completeness.
 		// All input values of rugosity are verified.
 		assertEquals(Ops.Geometric.Rugosity.NAME, expected, ((DoubleType) ops.run(
-			RugosityMesh.class, mesh)).get(), AbstractFeatureTest.BIG_DELTA);
+			DefaultRugosityMesh.class, mesh)).get(), AbstractFeatureTest.BIG_DELTA);
 	}
 
 	@Test
@@ -150,7 +150,7 @@ public class GeomTest extends AbstractFeatureTest {
 		// Verified by hand. qhull merges faces and therefore has another number
 		// of surface pixels
 		assertEquals(Ops.Geometric.VerticesCountConvexHull.NAME, expected,
-			((DoubleType) ops.run(VerticesCountConvexHullMesh.class, mesh))
+			((DoubleType) ops.run(DefaultVerticesCountConvexHullMesh.class, mesh))
 				.get(), AbstractFeatureTest.BIG_DELTA);
 
 	}
@@ -169,7 +169,7 @@ public class GeomTest extends AbstractFeatureTest {
 		final double expected = expensiveTestsEnabled ? 108660.667 : 4930.375000000;
 		// value taken from qhull (qhull.org)
 		assertEquals(Ops.Geometric.SizeConvexHull.NAME, expected, ((DoubleType) ops
-			.run(SizeConvexHullMesh.class, mesh)).get(),
+			.run(DefaultSizeConvexHullMesh.class, mesh)).get(),
 			AbstractFeatureTest.BIG_DELTA);
 	}
 
@@ -186,7 +186,7 @@ public class GeomTest extends AbstractFeatureTest {
 	public void testBoundaryPixelCount() {
 		final double expected = expensiveTestsEnabled ? 20996.0 : 2070.0;
 		assertEquals(Ops.Geometric.VerticesCount.NAME, expected,
-			((DoubleType) ops.run(VerticesCountMesh.class, mesh)).get(),
+			((DoubleType) ops.run(DefaultVerticesCountMesh.class, mesh)).get(),
 			AbstractFeatureTest.BIG_DELTA);
 	}
 

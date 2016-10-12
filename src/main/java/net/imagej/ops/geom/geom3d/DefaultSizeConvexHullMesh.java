@@ -31,7 +31,7 @@
 package net.imagej.ops.geom.geom3d;
 
 import net.imagej.ops.Ops;
-import net.imagej.ops.geom.AbstractRugosity;
+import net.imagej.ops.geom.AbstractSizeConvexHull;
 import net.imagej.ops.geom.geom3d.mesh.Mesh;
 
 import org.scijava.Priority;
@@ -40,8 +40,12 @@ import org.scijava.plugin.Plugin;
 /**
  * @author Tim-Oliver Buchholz (University of Konstanz)
  */
-@Plugin(type = Ops.Geometric.Rugosity.class,
-	label = "Geometric (3D): Rugosity", priority = Priority.VERY_HIGH_PRIORITY)
-public class RugosityMesh extends AbstractRugosity<Mesh> {
-	// NB: Marker Interface
+@Plugin(type = Ops.Geometric.SizeConvexHull.class,
+	label = "Geometric (3D): Convex Hull Volume",
+	priority = Priority.VERY_HIGH_PRIORITY)
+public class DefaultSizeConvexHullMesh extends AbstractSizeConvexHull<Mesh> {
+
+	public DefaultSizeConvexHullMesh() {
+		super(Mesh.class);
+	}
 }
