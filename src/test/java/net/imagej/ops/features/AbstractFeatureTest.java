@@ -47,6 +47,7 @@ import net.imagej.ops.geom.geom3d.mesh.Vertex;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccess;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealPoint;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayCursor;
@@ -60,9 +61,11 @@ import net.imglib2.roi.labeling.LabelRegion;
 import net.imglib2.roi.labeling.LabelRegions;
 import net.imglib2.roi.labeling.LabelingType;
 import net.imglib2.type.logic.BitType;
+import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.view.RandomAccessibleIntervalCursor;
 
 import org.junit.Before;
 import org.scijava.Context;
@@ -305,22 +308,22 @@ public class AbstractFeatureTest extends AbstractOpTest {
 		return m;
 	}
 
-	protected static LabelRegion<String> createLabelRegion(
-		final Img<FloatType> img, final float min, final float max, long... dims)
+	protected static <T extends RealType<T>> LabelRegion<String> createLabelRegion(
+		final RandomAccessibleInterval<T> interval, final float min, final float max, long... dims)
 	{
 		if (dims == null || dims.length == 0) {
-			dims = new long[img.numDimensions()];
-			img.dimensions(dims);
+			dims = new long[interval.numDimensions()];
+			interval.dimensions(dims);
 		}
 		final ImgLabeling<String, IntType> labeling = 
 			new ImgLabeling<>(ArrayImgs.ints(dims));
 
 		final RandomAccess<LabelingType<String>> ra = labeling.randomAccess();
-		final Cursor<FloatType> c = img.cursor();
+		final RandomAccessibleIntervalCursor<T> c = new RandomAccessibleIntervalCursor<>(interval);		
 		final long[] pos = new long[labeling.numDimensions()];
 		while (c.hasNext()) {
-			final FloatType item = c.next();
-			final float value = item.get();
+			final T item = c.next();
+			final float value = item.getRealFloat();
 			if (value >= min && value <= max) {
 				c.localize(pos);
 				ra.setPosition(pos);
