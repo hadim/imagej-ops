@@ -58,7 +58,7 @@ public class DefaultSpareness<B extends BooleanType<B>> extends
 
 	private UnaryFunctionOp<IterableRegion<B>, DoubleType> medianElongation;
 
-	private UnaryFunctionOp<IterableRegion<B>, CovarianceOf2ndMultiVariate3D> multivar;
+	private UnaryFunctionOp<IterableRegion<B>, DefaultCovarianceOf2ndMultiVariate3D> multivar;
 
 	private UnaryFunctionOp<IterableRegion<B>, DoubleType> volume;
 
@@ -69,7 +69,7 @@ public class DefaultSpareness<B extends BooleanType<B>> extends
 		medianElongation = Functions.unary(ops(), Ops.Geometric.MedianElongation.class, DoubleType.class,
 			in());
 		multivar = Functions.unary(ops(), DefaultSecondMultiVariate3D.class,
-			CovarianceOf2ndMultiVariate3D.class, in());
+			DefaultCovarianceOf2ndMultiVariate3D.class, in());
 		volume = Functions.unary(ops(), Ops.Geometric.Size.class, DoubleType.class, in());
 	}
 

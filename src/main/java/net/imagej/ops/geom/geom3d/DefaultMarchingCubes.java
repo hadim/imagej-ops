@@ -32,8 +32,8 @@ package net.imagej.ops.geom.geom3d;
 
 import net.imagej.ops.Contingent;
 import net.imagej.ops.Ops;
-import net.imagej.ops.geom.geom3d.mesh.BitTypeVertexInterpolator;
 import net.imagej.ops.geom.geom3d.mesh.DefaultMesh;
+import net.imagej.ops.geom.geom3d.mesh.DefaultVertexInterpolator;
 import net.imagej.ops.geom.geom3d.mesh.Mesh;
 import net.imagej.ops.geom.geom3d.mesh.TriangularFacet;
 import net.imagej.ops.geom.geom3d.mesh.Vertex;
@@ -70,7 +70,7 @@ public class DefaultMarchingCubes<T extends BooleanType<T>> extends
 
 	@Parameter(type = ItemIO.INPUT, required = false)
 	private VertexInterpolator interpolatorClass =
-		new BitTypeVertexInterpolator();
+		new DefaultVertexInterpolator();
 
 	@SuppressWarnings({ "unchecked" })
 	@Override

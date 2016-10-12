@@ -40,6 +40,10 @@ import java.util.Random;
 
 import net.imagej.ops.AbstractOpTest;
 import net.imagej.ops.OpService;
+import net.imagej.ops.geom.geom3d.mesh.DefaultMesh;
+import net.imagej.ops.geom.geom3d.mesh.Mesh;
+import net.imagej.ops.geom.geom3d.mesh.TriangularFacet;
+import net.imagej.ops.geom.geom3d.mesh.Vertex;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccess;
@@ -256,17 +260,13 @@ public class AbstractFeatureTest extends AbstractOpTest {
 	}
 
 	protected static Img<FloatType> getTestImage2D() {
-		final String imageName = expensiveTestsEnabled ? "2d_geometric_features_testlabel_expensive.png"
-			: "2d_geometric_features_testlabel.tif";
-		return openFloatImg(AbstractFeatureTest.class, imageName);
+		return openFloatImg(AbstractFeatureTest.class, "2d_geometric_features_testlabel.tif");
 	}
 	
 	protected static Polygon getPolygon() {
-		final String polygonName = expensiveTestsEnabled ? "2d_geometric_features_polygon_expensive.txt"
-			: "2d_geometric_features_polygon.txt";
-		List<RealPoint> vertices = new ArrayList<>();
+		final List<RealPoint> vertices = new ArrayList<>();
 		try {
-			Files.lines(Paths.get(AbstractFeatureTest.class.getResource(polygonName).toURI()))
+			Files.lines(Paths.get(AbstractFeatureTest.class.getResource("2d_geometric_features_polygon.txt").toURI()))
 										.forEach(l -> {
 											String[] coord = l.split(" ");
 											RealPoint v = new RealPoint(new double[]{	Double.parseDouble(coord[0]), 
@@ -274,17 +274,35 @@ public class AbstractFeatureTest extends AbstractOpTest {
 											vertices.add(v);
 										});
 		} catch (IOException | URISyntaxException exc) {
-			// TODO Auto-generated catch block
 			exc.printStackTrace();
 		}
 		return new Polygon(vertices);
 	}
 
 	protected static Img<FloatType> getTestImage3D() {
-		final String imageName = expensiveTestsEnabled
-			? "3d_geometric_features_testlabel_expensive.tif"
-			: "3d_geometric_features_testlabel.tif";
-		return openFloatImg(AbstractFeatureTest.class, imageName);
+		return openFloatImg(AbstractFeatureTest.class, "3d_geometric_features_testlabel.tif");
+	}
+	
+	protected static Mesh getMesh() {
+		final List<Vertex> vertices = new ArrayList<>();
+		try {
+			Files.lines(Paths.get(AbstractFeatureTest.class.getResource("3d_geometric_features_mesh.txt").toURI()))
+										.forEach(l -> {
+											String[] coord = l.split(" ");
+											Vertex v = new Vertex(Double.parseDouble(coord[0]), 
+																  Double.parseDouble(coord[1]),
+																  Double.parseDouble(coord[2]));
+											vertices.add(v);
+										});
+		} catch (IOException | URISyntaxException exc) {
+			exc.printStackTrace();
+		}
+		final DefaultMesh m = new DefaultMesh();
+		for (int i = 0; i < vertices.size(); i+=3) {
+			final TriangularFacet f = new TriangularFacet(vertices.get(i), vertices.get(i+1), vertices.get(i+2));
+			m.addFace(f);
+		}
+		return m;
 	}
 
 	protected static LabelRegion<String> createLabelRegion(

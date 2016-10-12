@@ -52,7 +52,7 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = Ops.Geometric.SecondMultiVariate.class)
 public class DefaultSecondMultiVariate3D<B extends BooleanType<B>> extends
-	AbstractUnaryFunctionOp<IterableRegion<B>, CovarianceOf2ndMultiVariate3D>
+	AbstractUnaryFunctionOp<IterableRegion<B>, DefaultCovarianceOf2ndMultiVariate3D>
 	implements Ops.Geometric.SecondMultiVariate, Contingent
 {
 
@@ -64,8 +64,8 @@ public class DefaultSecondMultiVariate3D<B extends BooleanType<B>> extends
 	}
 
 	@Override
-	public CovarianceOf2ndMultiVariate3D compute1(final IterableRegion<B> input) {
-		CovarianceOf2ndMultiVariate3D output = new CovarianceOf2ndMultiVariate3D();
+	public DefaultCovarianceOf2ndMultiVariate3D compute1(final IterableRegion<B> input) {
+		DefaultCovarianceOf2ndMultiVariate3D output = new DefaultCovarianceOf2ndMultiVariate3D();
 		Cursor<Void> c = input.localizingCursor();
 		double[] pos = new double[3];
 		double[] computedCentroid = new double[3];

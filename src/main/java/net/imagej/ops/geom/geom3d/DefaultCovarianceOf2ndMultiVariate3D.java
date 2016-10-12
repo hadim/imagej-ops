@@ -39,12 +39,12 @@ import org.apache.commons.math3.linear.EigenDecomposition;
  * 
  * @author Tim-Oliver Buchholz (University of Konstanz)
  */
-public class CovarianceOf2ndMultiVariate3D {
+public class DefaultCovarianceOf2ndMultiVariate3D {
 
 	private Array2DRowRealMatrix matrix;
 	private EigenDecomposition ed = null;
 
-	public CovarianceOf2ndMultiVariate3D() {
+	public DefaultCovarianceOf2ndMultiVariate3D() {
 		matrix = new Array2DRowRealMatrix(3, 3);
 		matrix.setEntry(0, 0, 0);
 		matrix.setEntry(0, 1, 0);

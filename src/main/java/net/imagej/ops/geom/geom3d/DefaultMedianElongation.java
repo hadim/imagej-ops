@@ -56,17 +56,17 @@ public class DefaultMedianElongation<B extends BooleanType<B>> extends
 	Ops.Geometric.MedianElongation, Contingent
 {
 
-	private UnaryFunctionOp<IterableRegion<B>, CovarianceOf2ndMultiVariate3D> multivar;
+	private UnaryFunctionOp<IterableRegion<B>, DefaultCovarianceOf2ndMultiVariate3D> multivar;
 
 	@Override
 	public void initialize() {
 		multivar = Functions.unary(ops(), DefaultSecondMultiVariate3D.class,
-			CovarianceOf2ndMultiVariate3D.class, in());
+			DefaultCovarianceOf2ndMultiVariate3D.class, in());
 	}
 
 	@Override
 	public void compute1(final IterableRegion<B> input, final DoubleType output) {
-		CovarianceOf2ndMultiVariate3D compute = multivar.compute1(input);
+		DefaultCovarianceOf2ndMultiVariate3D compute = multivar.compute1(input);
 		output.set(Math.sqrt(compute.getEigenvalue(1) / compute
 			.getEigenvalue(2)));
 	}
