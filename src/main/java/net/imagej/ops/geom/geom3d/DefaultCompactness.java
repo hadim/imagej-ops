@@ -43,13 +43,16 @@ import org.scijava.plugin.Plugin;
 /**
  * Generic implementation of {@link net.imagej.ops.Ops.Geometric.Compactness}.
  * 
+ * Based on http://www.sciencedirect.com/science/article/pii/S003132030700324X.
+ * 
+ * In the paper compactness is defined as area^3/volume^2. For a sphere this is
+ * minimized and results in 36*PI. To get values between (0,1] we use
+ * (36*PI)/(area^3/volume^2).
+ * 
  * @author Tim-Oliver Buchholz (University of Konstanz)
  */
-@Plugin(type = Ops.Geometric.Compactness.class,
-	label = "Geometric (3D): Compactness", priority = Priority.VERY_HIGH_PRIORITY)
-public class DefaultCompactness extends AbstractUnaryHybridCF<Mesh, DoubleType>
-	implements Ops.Geometric.Compactness
-{
+@Plugin(type = Ops.Geometric.Compactness.class, label = "Geometric (3D): Compactness", priority = Priority.VERY_HIGH_PRIORITY)
+public class DefaultCompactness extends AbstractUnaryHybridCF<Mesh, DoubleType> implements Ops.Geometric.Compactness {
 
 	private UnaryFunctionOp<Mesh, DoubleType> surfacePixel;
 
@@ -57,19 +60,18 @@ public class DefaultCompactness extends AbstractUnaryHybridCF<Mesh, DoubleType>
 
 	@Override
 	public void initialize() {
-		surfacePixel = Functions.unary(ops(), Ops.Geometric.VerticesCount.class,
-			DoubleType.class, in());
+		surfacePixel = Functions.unary(ops(), Ops.Geometric.VerticesCount.class, DoubleType.class, in());
 		volume = Functions.unary(ops(), Ops.Geometric.Size.class, DoubleType.class, in());
 	}
 
 	@Override
 	public void compute1(final Mesh input, final DoubleType output) {
-		double s3 = Math.pow(surfacePixel.compute1(input).get(), 3);
-		double v2 = Math.pow(volume.compute1(input).get(), 2);
-
-		output.set((v2 * 36.0 * Math.PI) / s3);
+		final double s3 = Math.pow(surfacePixel.compute1(input).get(), 3);
+		final double v2 = Math.pow(volume.compute1(input).get(), 2);
+		final double c = s3 / v2;
+		output.set((36.0 * Math.PI) / c);
 	}
-	
+
 	@Override
 	public DoubleType createOutput(Mesh input) {
 		return new DoubleType();

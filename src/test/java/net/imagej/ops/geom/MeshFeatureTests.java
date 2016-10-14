@@ -6,8 +6,15 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import net.imagej.Position;
+import net.imagej.ops.Ops;
 import net.imagej.ops.features.AbstractFeatureTest;
+import net.imagej.ops.geom.geom3d.DefaultBoxivityMesh;
+import net.imagej.ops.geom.geom3d.DefaultConvexHull3D;
 import net.imagej.ops.geom.geom3d.DefaultMarchingCubes;
+import net.imagej.ops.geom.geom3d.DefaultSizeConvexHullMesh;
+import net.imagej.ops.geom.geom3d.DefaultSizeMesh;
+import net.imagej.ops.geom.geom3d.DefaultSurfaceArea;
+import net.imagej.ops.geom.geom3d.DefaultSurfaceAreaConvexHullMesh;
 import net.imagej.ops.geom.geom3d.DefaultVoxelization3D;
 import net.imagej.ops.geom.geom3d.mesh.DefaultMesh;
 import net.imagej.ops.geom.geom3d.mesh.Facet;
@@ -20,6 +27,7 @@ import net.imglib2.roi.labeling.LabelRegionCursor;
 import net.imglib2.roi.labeling.LabelRegionRandomAccess;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.real.DoubleType;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -34,15 +42,14 @@ public class MeshFeatureTests extends AbstractFeatureTest {
 		ROI = createLabelRegion(getTestImage3D(), 1, 255);
 		mesh = getMesh();
 	}
-
-	@Test
-	public void boundarySizeConvexHullMesh() {
-
-	}
-
+	
 	@Test
 	public void boxivityMesh() {
-
+		try {
+			ops.run(DefaultBoxivityMesh.class, mesh);
+		} catch (IllegalArgumentException e) {
+			// DefaultSmallestOrientedBoundingBox is not implemented. 
+		}
 	}
 
 	@Test
@@ -52,7 +59,9 @@ public class MeshFeatureTests extends AbstractFeatureTest {
 
 	@Test
 	public void convexHull3D() {
-
+		/**
+		 * convexHull3D is tested in {@link QuickHull3DTest}.
+		 */
 	}
 
 	@Test
@@ -80,8 +89,8 @@ public class MeshFeatureTests extends AbstractFeatureTest {
 			final TriangularFacet tmpE = (TriangularFacet) expectedFacets.get(i);
 
 			for (int j = 0; j < 3; j++) {
-				final Vertex expectedVertex = tmpE.getVertex(j);
 				final Vertex resultVertex = tmpR.getVertex(j);
+				final Vertex expectedVertex = tmpE.getVertex(j);
 				assertEquals("Triangular Facet point " + j + " differes in x- coordinate:",
 						expectedVertex.getDoublePosition(0), resultVertex.getDoublePosition(0), EPSILON);
 				assertEquals("Triangular Facet point " + j + " differes in y- coordinate:",
@@ -98,8 +107,32 @@ public class MeshFeatureTests extends AbstractFeatureTest {
 	}
 
 	@Test
+	public void rugosityMesh() {
+
+	}
+	
+	@Test
 	public void secondMultiVariate3D() {
 
+	}
+	
+	@Test
+	public void sizeConvexHullMesh() {
+		// ground truth computed with matlab
+		assertEquals(Ops.Geometric.SizeConvexHull.NAME, 304.5,
+				((DoubleType) ops.run(DefaultSizeConvexHullMesh.class, mesh)).get(), EPSILON);
+	}
+	
+	@Test
+	public void sizeMesh() {
+		// ground truth computed with matlab
+		assertEquals(Ops.Geometric.Size.NAME, 257.5,
+				((DoubleType) ops.run(DefaultSizeMesh.class, mesh)).get(), EPSILON);
+	}
+	
+	@Test
+	public void solidityMesh() {
+		
 	}
 
 	@Test
@@ -114,39 +147,16 @@ public class MeshFeatureTests extends AbstractFeatureTest {
 
 	@Test
 	public void surfaceArea() {
-
+		// ground truth computed with matlab
+		assertEquals(Ops.Geometric.BoundarySize.NAME, 235.7390893402464,
+				((DoubleType) ops.run(DefaultSurfaceArea.class, mesh)).get(), EPSILON);
 	}
-
+	
 	@Test
-	public void voxelization3D() {
-		// the mesh is verified and created with marching cubes. 
-		@SuppressWarnings("unchecked")
-		final RandomAccessibleInterval<BitType> img = (RandomAccessibleInterval<BitType>) ops.run(DefaultVoxelization3D.class,
-				mesh, ROI.max(0) - ROI.min(0) + 1, ROI.max(1) - ROI.min(1) + 1, ROI.max(2) - ROI.min(2) + 1);
-		final LabelRegion<String> result = createLabelRegion(img, 1, 1);
-		final LabelRegionCursor c = result.cursor();
-		while (c.hasNext()) {
-			c.next();
-			// move the voxels 
-			final long[] pos = new long[] { c.getLongPosition(0) + ROI.min(0), c.getLongPosition(1) + ROI.min(1),
-					c.getLongPosition(2) + ROI.min(2) };
-			assertTrue(mesh.getVertices().contains(new Vertex(pos[0], pos[1], pos[2])));
-		}
-	}
-
-	@Test
-	public void rugosityMesh() {
-
-	}
-
-	@Test
-	public void sizeConvexHullMesh() {
-
-	}
-
-	@Test
-	public void solidityMesh() {
-
+	public void surfaceAreaConvexHull() {
+		// ground truth computed with matlab
+				assertEquals(Ops.Geometric.BoundarySize.NAME, 231.9508788339317,
+						((DoubleType) ops.run(DefaultSurfaceAreaConvexHullMesh.class, mesh)).get(), EPSILON);
 	}
 
 	@Test
@@ -157,5 +167,23 @@ public class MeshFeatureTests extends AbstractFeatureTest {
 	@Test
 	public void verticesCountMesh() {
 
+	}
+	
+	@Test
+	public void voxelization3D() {
+		// the mesh is verified and created with marching cubes.
+		@SuppressWarnings("unchecked")
+		final RandomAccessibleInterval<BitType> img = (RandomAccessibleInterval<BitType>) ops.run(
+				DefaultVoxelization3D.class, mesh, ROI.max(0) - ROI.min(0) + 1, ROI.max(1) - ROI.min(1) + 1,
+				ROI.max(2) - ROI.min(2) + 1);
+		final LabelRegion<String> result = createLabelRegion(img, 1, 1);
+		final LabelRegionCursor c = result.cursor();
+		while (c.hasNext()) {
+			c.next();
+			// move the voxels
+			final long[] pos = new long[] { c.getLongPosition(0) + ROI.min(0), c.getLongPosition(1) + ROI.min(1),
+					c.getLongPosition(2) + ROI.min(2) };
+			assertTrue(mesh.getVertices().contains(new Vertex(pos[0], pos[1], pos[2])));
+		}
 	}
 }

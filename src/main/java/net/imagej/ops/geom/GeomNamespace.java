@@ -146,7 +146,7 @@ public class GeomNamespace extends AbstractNamespace {
 		return result;
 	}
 
-	@OpMethod(op = net.imagej.ops.geom.geom3d.DefaultBoundarySizeConvexHullMesh.class)
+	@OpMethod(op = net.imagej.ops.geom.geom3d.DefaultSurfaceAreaConvexHullMesh.class)
 	public DoubleType boundarySizeConvexHull(final Mesh in) {
 		final DoubleType result = (DoubleType) ops().run(
 			net.imagej.ops.Ops.Geometric.BoundarySizeConvexHull.class, in);
@@ -160,10 +160,10 @@ public class GeomNamespace extends AbstractNamespace {
 		return result;
 	}
 
-	@OpMethod(op = net.imagej.ops.geom.geom3d.DefaultBoundarySizeConvexHullMesh.class)
+	@OpMethod(op = net.imagej.ops.geom.geom3d.DefaultSurfaceAreaConvexHullMesh.class)
 	public DoubleType boundarySizeConvexHull(final DoubleType out, final Mesh in) {
 		final DoubleType result =
-			(DoubleType) ops().run(net.imagej.ops.geom.geom3d.DefaultBoundarySizeConvexHullMesh.class, out, in);
+			(DoubleType) ops().run(net.imagej.ops.geom.geom3d.DefaultSurfaceAreaConvexHullMesh.class, out, in);
 		return result;
 	}
 	
@@ -629,7 +629,7 @@ public class GeomNamespace extends AbstractNamespace {
 		return result;
 	}
 
-	@OpMethod(op = net.imagej.ops.geom.geom3d.mesh.DefaultVolume.class)
+	@OpMethod(op = net.imagej.ops.geom.geom3d.DefaultSizeMesh.class)
 	public DoubleType size(final Mesh in) {
 		final DoubleType result = (DoubleType) ops().run(
 			net.imagej.ops.Ops.Geometric.Size.class, in);

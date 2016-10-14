@@ -45,6 +45,8 @@ import org.scijava.plugin.Plugin;
 /**
  * Generic implementation of {@link net.imagej.ops.Ops.Geometric.Spareness}.
  * 
+ * Based on ImageJ1.
+ * 
  * @author Tim-Oliver Buchholz (University of Konstanz)
  */
 @Plugin(type = Ops.Geometric.Spareness.class,

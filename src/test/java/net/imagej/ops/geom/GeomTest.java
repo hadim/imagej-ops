@@ -35,7 +35,7 @@ import static org.junit.Assert.assertEquals;
 import net.imagej.ops.Ops;
 import net.imagej.ops.features.AbstractFeatureTest;
 import net.imagej.ops.geom.geom3d.DefaultVerticesCountConvexHullMesh;
-import net.imagej.ops.geom.geom3d.DefaultBoundarySizeConvexHullMesh;
+import net.imagej.ops.geom.geom3d.DefaultSurfaceAreaConvexHullMesh;
 import net.imagej.ops.geom.geom3d.DefaultConvexityMesh;
 import net.imagej.ops.geom.geom3d.DefaultCompactness;
 import net.imagej.ops.geom.geom3d.DefaultMainElongation;
@@ -160,7 +160,7 @@ public class GeomTest extends AbstractFeatureTest {
 		final double expected = expensiveTestsEnabled ? 13580.54 : 1457.276963378;
 		// value taken from qhull (qhull.org)
 		assertEquals(Ops.Geometric.BoundarySizeConvexHull.NAME, expected,
-			((DoubleType) ops.run(DefaultBoundarySizeConvexHullMesh.class, mesh)).get(),
+			((DoubleType) ops.run(DefaultSurfaceAreaConvexHullMesh.class, mesh)).get(),
 			AbstractFeatureTest.BIG_DELTA);
 	}
 

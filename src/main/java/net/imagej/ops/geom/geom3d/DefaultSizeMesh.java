@@ -27,28 +27,51 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
-
 package net.imagej.ops.geom.geom3d;
 
+import net.imagej.ops.Contingent;
 import net.imagej.ops.Ops;
-import net.imagej.ops.geom.AbstractBoundarySizeConvexHull;
+import net.imagej.ops.geom.geom3d.mesh.Facet;
 import net.imagej.ops.geom.geom3d.mesh.Mesh;
+import net.imagej.ops.geom.geom3d.mesh.TriangularFacet;
+import net.imagej.ops.special.function.AbstractUnaryFunctionOp;
+import net.imglib2.type.numeric.real.DoubleType;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
 /**
+ * Generic implementation of {@link net.imagej.ops.Ops.Geometric.Size}.
+ * 
  * @author Tim-Oliver Buchholz (University of Konstanz)
  */
-@Plugin(type = Ops.Geometric.BoundarySizeConvexHull.class,
-	label = "Geometric (3D): Surface AreaO Convex Hull",
-	priority = Priority.VERY_HIGH_PRIORITY)
-public class DefaultBoundarySizeConvexHullMesh extends
-	AbstractBoundarySizeConvexHull<Mesh>
-{
+@Plugin(type = Ops.Geometric.Size.class, label = "Geometric3D: Volume",
+	priority = Priority.VERY_HIGH_PRIORITY-1)
+public class DefaultSizeMesh
+		extends
+			AbstractUnaryFunctionOp<Mesh, DoubleType>
+		implements
+			Ops.Geometric.Size,
+			Contingent {
 
-	public DefaultBoundarySizeConvexHullMesh() {
-		super(Mesh.class);
+	@Override
+	public DoubleType compute1(final Mesh input) {
+		double volume = 0;
+		for (Facet f : input.getFacets()) {
+			TriangularFacet tf = (TriangularFacet) f;
+			volume += signedVolumeOfTriangle(tf.getP0(), tf.getP1(), tf.getP2());	
+		}
+		return new DoubleType(Math.abs(volume));
+	}
+
+	private double signedVolumeOfTriangle(Vector3D p0, Vector3D p1, Vector3D p2) {
+		 return p0.dotProduct(p1.crossProduct(p2)) / 6.0f;
+	}
+	
+	@Override
+	public boolean conforms() {
+		return in().triangularFacets();
 	}
 
 }
