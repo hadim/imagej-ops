@@ -9,10 +9,16 @@ import net.imagej.Position;
 import net.imagej.ops.Ops;
 import net.imagej.ops.features.AbstractFeatureTest;
 import net.imagej.ops.geom.geom3d.DefaultBoxivityMesh;
+import net.imagej.ops.geom.geom3d.DefaultCompactness;
 import net.imagej.ops.geom.geom3d.DefaultConvexHull3D;
+import net.imagej.ops.geom.geom3d.DefaultConvexityMesh;
 import net.imagej.ops.geom.geom3d.DefaultMarchingCubes;
 import net.imagej.ops.geom.geom3d.DefaultSizeConvexHullMesh;
 import net.imagej.ops.geom.geom3d.DefaultSizeMesh;
+import net.imagej.ops.geom.geom3d.DefaultSolidityMesh;
+import net.imagej.ops.geom.geom3d.DefaultSpareness;
+import net.imagej.ops.geom.geom3d.DefaultSparenessMesh;
+import net.imagej.ops.geom.geom3d.DefaultSphericity;
 import net.imagej.ops.geom.geom3d.DefaultSurfaceArea;
 import net.imagej.ops.geom.geom3d.DefaultSurfaceAreaConvexHullMesh;
 import net.imagej.ops.geom.geom3d.DefaultVoxelization3D;
@@ -54,7 +60,9 @@ public class MeshFeatureTests extends AbstractFeatureTest {
 
 	@Test
 	public void compactness() {
-
+		// formula verified and ground truth computed with matlab
+		assertEquals(Ops.Geometric.Compactness.NAME, 0.572416357359835,
+				((DoubleType) ops.run(DefaultCompactness.class, mesh)).get(), EPSILON);
 	}
 
 	@Test
@@ -66,12 +74,9 @@ public class MeshFeatureTests extends AbstractFeatureTest {
 
 	@Test
 	public void convexityMesh() {
-
-	}
-
-	@Test
-	public void covarianceOf2ndMultiVariate3D() {
-
+		// formula verified and ground truth computed with matlab
+		assertEquals(Ops.Geometric.Convexity.NAME, 0.983930494866521,
+				((DoubleType) ops.run(DefaultConvexityMesh.class, mesh)).get(), EPSILON);
 	}
 
 	@Test
@@ -105,11 +110,6 @@ public class MeshFeatureTests extends AbstractFeatureTest {
 	public void medianElongation() {
 
 	}
-
-	@Test
-	public void rugosityMesh() {
-
-	}
 	
 	@Test
 	public void secondMultiVariate3D() {
@@ -132,17 +132,23 @@ public class MeshFeatureTests extends AbstractFeatureTest {
 	
 	@Test
 	public void solidityMesh() {
-		
+		// formula verified and ground truth computed with matlab
+		assertEquals(Ops.Geometric.Solidity.NAME, 0.845648604269294,
+				((DoubleType) ops.run(DefaultSolidityMesh.class, mesh)).get(), EPSILON);
 	}
 
 	@Test
 	public void spareness() {
-
+		// formula verified 
+		assertEquals(Ops.Geometric.Spareness.NAME, 0,
+				((DoubleType) ops.run(DefaultSparenessMesh.class, mesh)).get(), EPSILON);
 	}
 
 	@Test
 	public void sphericity() {
-
+		// formula verified and ground truth computed with matlab
+		assertEquals(Ops.Geometric.Sphericity.NAME, 0.830304411183464,
+				((DoubleType) ops.run(DefaultSphericity.class, mesh)).get(), EPSILON);
 	}
 
 	@Test

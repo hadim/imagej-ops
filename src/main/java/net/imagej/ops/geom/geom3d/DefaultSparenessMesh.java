@@ -30,51 +30,74 @@
 
 package net.imagej.ops.geom.geom3d;
 
+import net.imagej.ops.Contingent;
 import net.imagej.ops.Ops;
 import net.imagej.ops.geom.geom3d.mesh.Mesh;
 import net.imagej.ops.special.function.Functions;
 import net.imagej.ops.special.function.UnaryFunctionOp;
 import net.imagej.ops.special.hybrid.AbstractUnaryHybridCF;
+import net.imglib2.roi.IterableRegion;
+import net.imglib2.type.BooleanType;
 import net.imglib2.type.numeric.real.DoubleType;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
 /**
- * Generic implementation of {@link net.imagej.ops.Ops.Geometric.Compactness}.
+ * Generic implementation of {@link net.imagej.ops.Ops.Geometric.Spareness}.
  * 
- * Based on http://www.sciencedirect.com/science/article/pii/S003132030700324X.
- * 
- * In the paper compactness is defined as area^3/volume^2. For a sphere this is
- * minimized and results in 36*PI. To get values between (0,1] we use
- * (36*PI)/(area^3/volume^2).
+ * Based on ImageJ1.
  * 
  * @author Tim-Oliver Buchholz (University of Konstanz)
  */
-@Plugin(type = Ops.Geometric.Compactness.class, label = "Geometric (3D): Compactness", priority = Priority.VERY_HIGH_PRIORITY)
-public class DefaultCompactness extends AbstractUnaryHybridCF<Mesh, DoubleType> implements Ops.Geometric.Compactness {
+@Plugin(type = Ops.Geometric.Spareness.class,
+	label = "Geometric (3D): Spareness", priority = Priority.VERY_HIGH_PRIORITY)
+public class DefaultSparenessMesh extends
+	AbstractUnaryHybridCF<Mesh, DoubleType> implements
+	Ops.Geometric.Spareness, Contingent
+{
 
-	private UnaryFunctionOp<Mesh, DoubleType> surfaceArea;
+	private UnaryFunctionOp<Mesh, DoubleType> mainElongation;
+
+	private UnaryFunctionOp<Mesh, DoubleType> medianElongation;
+
+	private UnaryFunctionOp<Mesh, DefaultCovarianceOf2ndMultiVariate3D> multivar;
 
 	private UnaryFunctionOp<Mesh, DoubleType> volume;
 
 	@Override
 	public void initialize() {
-		surfaceArea = Functions.unary(ops(), Ops.Geometric.BoundarySize.class, DoubleType.class, in());
+		mainElongation = Functions.unary(ops(), Ops.Geometric.MainElongation.class, DoubleType.class,
+			in());
+		medianElongation = Functions.unary(ops(), Ops.Geometric.MedianElongation.class, DoubleType.class,
+			in());
+		multivar = Functions.unary(ops(), DefaultSecondMultiVariate3DMesh.class,
+			DefaultCovarianceOf2ndMultiVariate3D.class, in());
 		volume = Functions.unary(ops(), Ops.Geometric.Size.class, DoubleType.class, in());
 	}
 
 	@Override
 	public void compute1(final Mesh input, final DoubleType output) {
-		final double s3 = Math.pow(surfaceArea.compute1(input).get(), 3);
-		final double v2 = Math.pow(volume.compute1(input).get(), 2);
-		final double c = s3 / v2;
-		output.set((36.0 * Math.PI) / c);
-	}
 
+		double r1 = Math.sqrt(5.0 * multivar.compute1(input).getEigenvalue(0));
+		double r2 = r1 / mainElongation.compute1(input).get();
+		double r3 = r2 / medianElongation.compute1(input).get();
+		System.out.println("r1 " + r1);
+		System.out.println("r2 " + r2);
+		System.out.println("r3 " + r3);
+		double volumeEllipsoid = (4.18879 * r1 * r2 * r3);
+
+		output.set(volume.compute1(input).get() / volumeEllipsoid);
+	}
+	
 	@Override
 	public DoubleType createOutput(Mesh input) {
 		return new DoubleType();
+	}
+
+	@Override
+	public boolean conforms() {
+		return in() != null;
 	}
 
 }

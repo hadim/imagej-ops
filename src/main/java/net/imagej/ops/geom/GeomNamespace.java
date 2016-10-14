@@ -561,34 +561,6 @@ public class GeomNamespace extends AbstractNamespace {
 		return result;
 	}
 
-	@OpMethod(op = net.imagej.ops.geom.geom2d.RugosityPolygon.class)
-	public DoubleType rugosity(final Polygon in) {
-		final DoubleType result =
-			(DoubleType) ops().run(net.imagej.ops.geom.geom2d.RugosityPolygon.class, in);
-		return result;
-	}
-
-	@OpMethod(op = net.imagej.ops.geom.geom3d.DefaultRugosityMesh.class)
-	public DoubleType rugosity(final Mesh in) {
-		final DoubleType result =
-			(DoubleType) ops().run(net.imagej.ops.geom.geom3d.DefaultRugosityMesh.class, in);
-		return result;
-	}
-	
-	@OpMethod(op = net.imagej.ops.geom.geom2d.RugosityPolygon.class)
-	public DoubleType rugosity(final DoubleType out, final Polygon in) {
-		final DoubleType result =
-			(DoubleType) ops().run(net.imagej.ops.geom.geom2d.RugosityPolygon.class, out, in);
-		return result;
-	}
-
-	@OpMethod(op = net.imagej.ops.geom.geom3d.DefaultRugosityMesh.class)
-	public DoubleType rugosity(final DoubleType out, final Mesh in) {
-		final DoubleType result =
-			(DoubleType) ops().run(net.imagej.ops.geom.geom3d.DefaultRugosityMesh.class, out, in);
-		return result;
-	}
-
 	@OpMethod(op = net.imagej.ops.geom.geom2d.DefaultMinorMajorAxis.class)
 	public Pair<DoubleType, DoubleType> secondMultiVariate(final Polygon in) {
 		@SuppressWarnings("unchecked")

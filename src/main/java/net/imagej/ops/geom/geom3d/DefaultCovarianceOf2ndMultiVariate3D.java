@@ -81,15 +81,15 @@ public class DefaultCovarianceOf2ndMultiVariate3D {
 		return matrix.getEntry(0, 0);
 	}
 
-	public void setS200(final double s200) {
+	public void setS00(final double s200) {
 		matrix.setEntry(0, 0, s200);
 	}
 
-	public double getS110() {
+	public double getS01() {
 		return matrix.getEntry(0, 1);
 	}
 
-	public void setS110(final double s110) {
+	public void setS01(final double s110) {
 		matrix.setEntry(1, 0, s110);
 		matrix.setEntry(0, 1, s110);
 	}
@@ -98,7 +98,7 @@ public class DefaultCovarianceOf2ndMultiVariate3D {
 		return matrix.getEntry(0, 2);
 	}
 
-	public void setS101(final double s101) {
+	public void setS02(final double s101) {
 		matrix.setEntry(2, 0, s101);
 		matrix.setEntry(0, 2, s101);
 	}
@@ -107,7 +107,7 @@ public class DefaultCovarianceOf2ndMultiVariate3D {
 		return matrix.getEntry(1, 1);
 	}
 
-	public void setS020(final double s020) {
+	public void setS11(final double s020) {
 		matrix.setEntry(1, 1, s020);
 	}
 
@@ -115,7 +115,7 @@ public class DefaultCovarianceOf2ndMultiVariate3D {
 		return matrix.getEntry(1, 2);
 	}
 
-	public void setS011(final double s011) {
+	public void setS12(final double s011) {
 		matrix.setEntry(2, 1, s011);
 		matrix.setEntry(1, 2, s011);
 	}
@@ -124,7 +124,7 @@ public class DefaultCovarianceOf2ndMultiVariate3D {
 		return matrix.getEntry(2, 2);
 	}
 
-	public void setS002(final double s002) {
+	public void setS22(final double s002) {
 		matrix.setEntry(2, 2, s002);
 	}
 

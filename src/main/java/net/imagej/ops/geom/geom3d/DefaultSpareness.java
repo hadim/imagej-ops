@@ -81,7 +81,9 @@ public class DefaultSpareness<B extends BooleanType<B>> extends
 		double r1 = Math.sqrt(5.0 * multivar.compute1(input).getEigenvalue(0));
 		double r2 = r1 / mainElongation.compute1(input).get();
 		double r3 = r2 / medianElongation.compute1(input).get();
-
+		System.out.println("r1 " + r1);
+		System.out.println("r2 " + r2);
+		System.out.println("r3 " + r3);
 		double volumeEllipsoid = (4.18879 * r1 * r2 * r3);
 
 		output.set(volume.compute1(input).get() / volumeEllipsoid);

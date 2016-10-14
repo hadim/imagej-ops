@@ -27,7 +27,6 @@ import net.imagej.ops.geom.geom2d.DefaultRoundness;
 import net.imagej.ops.geom.geom2d.DefaultSizePolygon;
 import net.imagej.ops.geom.geom2d.DefaultSmallestEnclosingRectangle;
 import net.imagej.ops.geom.geom2d.LabelRegionToPolygonConverter;
-import net.imagej.ops.geom.geom2d.RugosityPolygon;
 import net.imagej.ops.geom.geom2d.SizeConvexHullPolygon;
 import net.imagej.ops.geom.geom2d.SolidityPolygon;
 import net.imagej.ops.geom.geom2d.VerticesCountConvexHullPolygon;
@@ -263,12 +262,6 @@ public class PolygonFeatureTests extends AbstractFeatureTest {
 			assertEquals("Polygon point " + i + " differs in y-coordinate.", expected.get(i).getDoublePosition(1),
 					received.get(i).getDoublePosition(1), EPSILON);
 		}
-	}
-
-	@Test
-	public void rugosity() {
-		assertEquals(Ops.Geometric.Rugosity.NAME, 0.773585391928,
-				((DoubleType) ops.run(RugosityPolygon.class, contour)).get(), EPSILON);
 	}
 
 	@Test

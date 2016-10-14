@@ -65,38 +65,38 @@ public class DefaultSecondMultiVariate3D<B extends BooleanType<B>> extends
 
 	@Override
 	public DefaultCovarianceOf2ndMultiVariate3D compute1(final IterableRegion<B> input) {
-		DefaultCovarianceOf2ndMultiVariate3D output = new DefaultCovarianceOf2ndMultiVariate3D();
+		final DefaultCovarianceOf2ndMultiVariate3D output = new DefaultCovarianceOf2ndMultiVariate3D();
 		Cursor<Void> c = input.localizingCursor();
 		double[] pos = new double[3];
 		double[] computedCentroid = new double[3];
 		centroid.compute1(input).localize(computedCentroid);
-		double mX = computedCentroid[0];
-		double mY = computedCentroid[1];
-		double mZ = computedCentroid[2];
+		final double mX = computedCentroid[0];
+		final double mY = computedCentroid[1];
+		final double mZ = computedCentroid[2];
 		while (c.hasNext()) {
 			c.fwd();
 			c.localize(pos);
-			output.setS200(output.getS200() + (pos[0] - mX) * (pos[0] - mX));
-			output.setS020(output.getS020() + (pos[1] - mX) * (pos[1] - mY));
-			output.setS002(output.getS002() + (pos[2] - mX) * (pos[2] - mZ));
-			output.setS110(output.getS110() + (pos[0] - mY) * (pos[1] - mY));
-			output.setS101(output.getS101() + (pos[0] - mY) * (pos[2] - mZ));
-			output.setS011(output.getS011() + (pos[1] - mZ) * (pos[2] - mZ));
+			output.setS00(output.getS200() + (pos[0] - mX) * (pos[0] - mX));
+			output.setS11(output.getS020() + (pos[1] - mX) * (pos[1] - mY));
+			output.setS22(output.getS002() + (pos[2] - mX) * (pos[2] - mZ));
+			output.setS01(output.getS01() + (pos[0] - mY) * (pos[1] - mY));
+			output.setS02(output.getS101() + (pos[0] - mY) * (pos[2] - mZ));
+			output.setS12(output.getS011() + (pos[1] - mZ) * (pos[2] - mZ));
 		}
 
-		double size = input.size();
-		double s200 = output.getS200() / size;
-		output.setS200(s200);
-		double s020 = output.getS020() / size;
-		output.setS020(s020);
-		double s002 = output.getS002() / size;
-		output.setS002(s002);
-		double s110 = output.getS110() / size;
-		output.setS110(s110);
-		double s101 = output.getS101() / size;
-		output.setS101(s101);
-		double s011 = output.getS011() / size;
-		output.setS011(s011);
+		final double size = input.size();
+		final double s200 = output.getS200() / size;
+		output.setS00(s200);
+		final double s020 = output.getS020() / size;
+		output.setS11(s020);
+		final double s002 = output.getS002() / size;
+		output.setS22(s002);
+		final double s110 = output.getS01() / size;
+		output.setS01(s110);
+		final double s101 = output.getS101() / size;
+		output.setS02(s101);
+		final double s011 = output.getS011() / size;
+		output.setS12(s011);
 
 		return output;
 	}

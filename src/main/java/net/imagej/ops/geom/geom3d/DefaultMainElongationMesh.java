@@ -28,20 +28,57 @@
  * #L%
  */
 
-package net.imagej.ops.geom.geom2d;
+package net.imagej.ops.geom.geom3d;
 
+import net.imagej.ops.Contingent;
 import net.imagej.ops.Ops;
-import net.imagej.ops.geom.AbstractRugosity;
-import net.imglib2.roi.geometric.Polygon;
+import net.imagej.ops.geom.geom3d.mesh.Mesh;
+import net.imagej.ops.special.function.Functions;
+import net.imagej.ops.special.function.UnaryFunctionOp;
+import net.imagej.ops.special.hybrid.AbstractUnaryHybridCF;
+import net.imglib2.roi.IterableRegion;
+import net.imglib2.type.BooleanType;
+import net.imglib2.type.numeric.real.DoubleType;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
 /**
+ * Generic implementation of {@link net.imagej.ops.Ops.Geometric.MainElongation}
+ * 
  * @author Tim-Oliver Buchholz (University of Konstanz)
  */
-@Plugin(type = Ops.Geometric.Rugosity.class,
-	label = "Geometric (2D): Rugosity", priority = Priority.VERY_HIGH_PRIORITY)
-public class RugosityPolygon extends AbstractRugosity<Polygon> {
-	// NB: Marker Interface
+@Plugin(type = Ops.Geometric.MainElongation.class,
+	label = "Geometric (3D): Main Elongation",
+	priority = Priority.VERY_HIGH_PRIORITY)
+public class DefaultMainElongationMesh extends
+	AbstractUnaryHybridCF<Mesh, DoubleType> implements
+	Ops.Geometric.MainElongation, Contingent
+{
+
+	private UnaryFunctionOp<Mesh, DefaultCovarianceOf2ndMultiVariate3D> multivar;
+
+	@Override
+	public void initialize() {
+		multivar = Functions.unary(ops(), DefaultSecondMultiVariate3DMesh.class,
+			DefaultCovarianceOf2ndMultiVariate3D.class, in());
+	}
+
+	@Override
+	public void compute1(final Mesh input, final DoubleType output) {
+		DefaultCovarianceOf2ndMultiVariate3D compute = multivar.compute1(input);
+		output.set(Math.sqrt(compute.getEigenvalue(0) / compute
+			.getEigenvalue(1)));
+	}
+	
+	@Override
+	public DoubleType createOutput(Mesh input) {
+		return new DoubleType();
+	}
+
+	@Override
+	public boolean conforms() {
+		return in() != null;
+	}
+
 }

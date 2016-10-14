@@ -28,47 +28,58 @@
  * #L%
  */
 
-package net.imagej.ops.geom;
+package net.imagej.ops.geom.geom3d;
 
+import net.imagej.ops.Contingent;
 import net.imagej.ops.Ops;
+import net.imagej.ops.geom.geom3d.mesh.Mesh;
 import net.imagej.ops.special.function.Functions;
 import net.imagej.ops.special.function.UnaryFunctionOp;
 import net.imagej.ops.special.hybrid.AbstractUnaryHybridCF;
+import net.imglib2.roi.IterableRegion;
+import net.imglib2.type.BooleanType;
 import net.imglib2.type.numeric.real.DoubleType;
 
+import org.scijava.Priority;
+import org.scijava.plugin.Plugin;
+
 /**
- * Generic implementation of {@link net.imagej.ops.Ops.Geometric.Rugosity}.
- * 
- * Based on Measurement and quantification of visual lobe shape characteristics from Alan H.S. Chan.
- * 
- * Formula in the paper: rugosity = boundarySize/convexHullBoundarySize, rugosity -> [1, Inf).
- * 
- * I swapped the fraction to: rugosity = convexHullBoundarySize/boundarySize, rugosity -> (0, 1].
+ * Generic implementation of
+ * {@link net.imagej.ops.Ops.Geometric.MedianElongation}.
  * 
  * @author Tim-Oliver Buchholz (University of Konstanz)
  */
-public abstract class AbstractRugosity<I> extends AbstractUnaryHybridCF<I, DoubleType>
-		implements Ops.Geometric.Rugosity {
+@Plugin(type = Ops.Geometric.MedianElongation.class,
+	label = "Geometric (3D): Median Elongation",
+	priority = Priority.VERY_HIGH_PRIORITY)
+public class DefaultMedianElongationMesh extends
+	AbstractUnaryHybridCF<Mesh, DoubleType> implements
+	Ops.Geometric.MedianElongation, Contingent
+{
 
-	private UnaryFunctionOp<I, DoubleType> boundarySize;
-
-	private UnaryFunctionOp<I, DoubleType> convexHullBoundarySize;
+	private UnaryFunctionOp<Mesh, DefaultCovarianceOf2ndMultiVariate3D> multivar;
 
 	@Override
 	public void initialize() {
-		boundarySize = Functions.unary(ops(), Ops.Geometric.BoundarySize.class, DoubleType.class, in());
-		convexHullBoundarySize = Functions.unary(ops(), Ops.Geometric.BoundarySizeConvexHull.class, DoubleType.class,
-				in());
+		multivar = Functions.unary(ops(), DefaultSecondMultiVariate3DMesh.class,
+			DefaultCovarianceOf2ndMultiVariate3D.class, in());
 	}
 
 	@Override
-	public void compute1(final I input, final DoubleType output) {
-		output.set(convexHullBoundarySize.compute1(input).get() / boundarySize.compute1(input).get());
+	public void compute1(final Mesh input, final DoubleType output) {
+		DefaultCovarianceOf2ndMultiVariate3D compute = multivar.compute1(input);
+		output.set(Math.sqrt(compute.getEigenvalue(1) / compute
+			.getEigenvalue(2)));
 	}
-
+	
 	@Override
-	public DoubleType createOutput(I input) {
+	public DoubleType createOutput(Mesh input) {
 		return new DoubleType();
+	}
+
+	@Override
+	public boolean conforms() {
+		return in() != null;
 	}
 
 }

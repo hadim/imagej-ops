@@ -34,20 +34,19 @@ import static org.junit.Assert.assertEquals;
 
 import net.imagej.ops.Ops;
 import net.imagej.ops.features.AbstractFeatureTest;
-import net.imagej.ops.geom.geom3d.DefaultVerticesCountConvexHullMesh;
-import net.imagej.ops.geom.geom3d.DefaultSurfaceAreaConvexHullMesh;
-import net.imagej.ops.geom.geom3d.DefaultConvexityMesh;
 import net.imagej.ops.geom.geom3d.DefaultCompactness;
+import net.imagej.ops.geom.geom3d.DefaultConvexityMesh;
 import net.imagej.ops.geom.geom3d.DefaultMainElongation;
 import net.imagej.ops.geom.geom3d.DefaultMarchingCubes;
 import net.imagej.ops.geom.geom3d.DefaultMedianElongation;
+import net.imagej.ops.geom.geom3d.DefaultSizeConvexHullMesh;
+import net.imagej.ops.geom.geom3d.DefaultSolidityMesh;
 import net.imagej.ops.geom.geom3d.DefaultSpareness;
 import net.imagej.ops.geom.geom3d.DefaultSphericity;
 import net.imagej.ops.geom.geom3d.DefaultSurfaceArea;
+import net.imagej.ops.geom.geom3d.DefaultSurfaceAreaConvexHullMesh;
+import net.imagej.ops.geom.geom3d.DefaultVerticesCountConvexHullMesh;
 import net.imagej.ops.geom.geom3d.DefaultVerticesCountMesh;
-import net.imagej.ops.geom.geom3d.DefaultRugosityMesh;
-import net.imagej.ops.geom.geom3d.DefaultSizeConvexHullMesh;
-import net.imagej.ops.geom.geom3d.DefaultSolidityMesh;
 import net.imagej.ops.geom.geom3d.mesh.Mesh;
 import net.imglib2.RealPoint;
 import net.imglib2.roi.labeling.LabelRegion;
@@ -124,15 +123,6 @@ public class GeomTest extends AbstractFeatureTest {
 		// All input values of solidity are verified.
 		assertEquals(Ops.Geometric.Solidity.NAME, expected, ((DoubleType) ops.run(
 			DefaultSolidityMesh.class, mesh)).get(), AbstractFeatureTest.BIG_DELTA);
-	}
-
-	@Test
-	public void testRugosity() {
-		final double expected = expensiveTestsEnabled ? 0.966134851 : 0.966134851;
-		// This test is just here for completeness.
-		// All input values of rugosity are verified.
-		assertEquals(Ops.Geometric.Rugosity.NAME, expected, ((DoubleType) ops.run(
-			DefaultRugosityMesh.class, mesh)).get(), AbstractFeatureTest.BIG_DELTA);
 	}
 
 	@Test
