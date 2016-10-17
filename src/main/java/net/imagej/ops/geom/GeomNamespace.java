@@ -52,6 +52,7 @@ import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.util.Pair;
 
+import org.apache.commons.math3.linear.RealMatrix;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -561,25 +562,6 @@ public class GeomNamespace extends AbstractNamespace {
 		return result;
 	}
 
-	@OpMethod(op = net.imagej.ops.geom.geom2d.DefaultMinorMajorAxis.class)
-	public Pair<DoubleType, DoubleType> secondMultiVariate(final Polygon in) {
-		@SuppressWarnings("unchecked")
-		final Pair<DoubleType, DoubleType> result =
-			(Pair<DoubleType, DoubleType>) ops().run(
-				net.imagej.ops.Ops.Geometric.SecondMultiVariate.class, in);
-		return result;
-	}
-
-	@OpMethod(op = net.imagej.ops.geom.geom3d.DefaultSecondMultiVariate3D.class)
-	public <B extends BooleanType<B>> DefaultCovarianceOf2ndMultiVariate3D
-		secondMultiVariate(final IterableRegion<B> in)
-	{
-		final DefaultCovarianceOf2ndMultiVariate3D result =
-			(DefaultCovarianceOf2ndMultiVariate3D) ops().run(
-				net.imagej.ops.Ops.Geometric.SecondMultiVariate.class, in);
-		return result;
-	}
-
 	@OpMethod(op = net.imagej.ops.geom.geom2d.DefaultSizePolygon.class)
 	public DoubleType size(final Polygon in) {
 		final DoubleType result =
@@ -810,4 +792,74 @@ public class GeomNamespace extends AbstractNamespace {
 		return result;
 	}
 
+	@OpMethod(op = net.imagej.ops.geom.geom3d.DefaultMainElongation.class)
+	public DoubleType mainElongation(final Mesh in) {
+		final DoubleType result =
+			(DoubleType) ops().run(net.imagej.ops.geom.geom3d.DefaultMainElongation.class, in);
+		return result;
+	}
+
+	@OpMethod(op = net.imagej.ops.geom.geom3d.DefaultMainElongation.class)
+	public DoubleType mainElongation(final DoubleType out, final Mesh in) {
+		final DoubleType result =
+			(DoubleType) ops().run(net.imagej.ops.geom.geom3d.DefaultMainElongation.class, out, in);
+		return result;
+	}
+	
+	@OpMethod(op = net.imagej.ops.geom.geom3d.DefaultMedianElongationMesh.class)
+	public DoubleType medianElongation(final Mesh in) {
+		final DoubleType result =
+			(DoubleType) ops().run(net.imagej.ops.geom.geom3d.DefaultMedianElongationMesh.class, in);
+		return result;
+	}
+
+	@OpMethod(op = net.imagej.ops.geom.geom3d.DefaultMedianElongationMesh.class)
+	public DoubleType medianElongation(final DoubleType out, final Mesh in) {
+		final DoubleType result =
+			(DoubleType) ops().run(net.imagej.ops.geom.geom3d.DefaultMedianElongationMesh.class, out, in);
+		return result;
+	}
+	
+	@OpMethod(op = net.imagej.ops.geom.geom2d.DefaultMinorMajorAxis.class)
+	public Pair<DoubleType, DoubleType> secondMoment(final Polygon in) {
+		@SuppressWarnings("unchecked")
+		final Pair<DoubleType, DoubleType> result =
+			(Pair<DoubleType, DoubleType>) ops().run(net.imagej.ops.geom.geom2d.DefaultMinorMajorAxis.class, in);
+		return result;
+	}
+
+	@OpMethod(op = net.imagej.ops.geom.geom3d.DefaultInertiaTensor3D.class)
+	public <B extends BooleanType<B>> DefaultCovarianceOf2ndMultiVariate3D secondMoment(final IterableRegion<B> in) {
+		final DefaultCovarianceOf2ndMultiVariate3D result =
+			(DefaultCovarianceOf2ndMultiVariate3D) ops().run(net.imagej.ops.geom.geom3d.DefaultInertiaTensor3D.class, in);
+		return result;
+	}
+
+	@OpMethod(op = net.imagej.ops.geom.geom3d.DefaultInertiaTensor3DMesh.class)
+	public RealMatrix secondMoment(final Mesh in) {
+		final RealMatrix result =
+			(RealMatrix) ops().run(net.imagej.ops.geom.geom3d.DefaultInertiaTensor3DMesh.class, in);
+		return result;
+	}
+	
+	@OpMethod(op = net.imagej.ops.geom.geom3d.mesh.DefaultSmallestOrientedBoundingBox.class)
+	public Mesh smallestEnclosingBoundingBox(final Mesh in) {
+		final Mesh result =
+			(Mesh) ops().run(net.imagej.ops.geom.geom3d.mesh.DefaultSmallestOrientedBoundingBox.class, in);
+		return result;
+	}
+	
+	@OpMethod(op = net.imagej.ops.geom.geom3d.DefaultSparenessMesh.class)
+	public DoubleType spareness(final Mesh in) {
+		final DoubleType result =
+			(DoubleType) ops().run(net.imagej.ops.geom.geom3d.DefaultSparenessMesh.class, in);
+		return result;
+	}
+
+	@OpMethod(op = net.imagej.ops.geom.geom3d.DefaultSparenessMesh.class)
+	public DoubleType spareness(final DoubleType out, final Mesh in) {
+		final DoubleType result =
+			(DoubleType) ops().run(net.imagej.ops.geom.geom3d.DefaultSparenessMesh.class, out, in);
+		return result;
+	}
 }

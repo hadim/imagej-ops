@@ -41,6 +41,8 @@ import net.imglib2.RealLocalizable;
 import net.imglib2.roi.IterableRegion;
 import net.imglib2.type.BooleanType;
 
+import org.apache.commons.math3.linear.BlockRealMatrix;
+import org.apache.commons.math3.linear.RealMatrix;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -48,13 +50,12 @@ import org.scijava.plugin.Plugin;
  * (Label).
  * 
  * @author Tim-Oliver Buchholz (University of Konstanz)
- * @param <B> BooleanType
+ * @param <B>
+ *            BooleanType
  */
-@Plugin(type = Ops.Geometric.SecondMultiVariate.class)
-public class DefaultSecondMultiVariate3D<B extends BooleanType<B>> extends
-	AbstractUnaryFunctionOp<IterableRegion<B>, DefaultCovarianceOf2ndMultiVariate3D>
-	implements Ops.Geometric.SecondMultiVariate, Contingent
-{
+@Plugin(type = Ops.Geometric.SecondMoment.class)
+public class DefaultInertiaTensor3D<B extends BooleanType<B>> extends
+		AbstractUnaryFunctionOp<IterableRegion<B>, RealMatrix> implements Ops.Geometric.SecondMoment, Contingent {
 
 	private UnaryFunctionOp<IterableRegion<B>, RealLocalizable> centroid;
 
@@ -64,8 +65,8 @@ public class DefaultSecondMultiVariate3D<B extends BooleanType<B>> extends
 	}
 
 	@Override
-	public DefaultCovarianceOf2ndMultiVariate3D compute1(final IterableRegion<B> input) {
-		final DefaultCovarianceOf2ndMultiVariate3D output = new DefaultCovarianceOf2ndMultiVariate3D();
+	public RealMatrix compute1(final IterableRegion<B> input) {
+		final BlockRealMatrix output = new BlockRealMatrix(3, 3);
 		Cursor<Void> c = input.localizingCursor();
 		double[] pos = new double[3];
 		double[] computedCentroid = new double[3];
@@ -76,27 +77,27 @@ public class DefaultSecondMultiVariate3D<B extends BooleanType<B>> extends
 		while (c.hasNext()) {
 			c.fwd();
 			c.localize(pos);
-			output.setS00(output.getS200() + (pos[0] - mX) * (pos[0] - mX));
-			output.setS11(output.getS020() + (pos[1] - mX) * (pos[1] - mY));
-			output.setS22(output.getS002() + (pos[2] - mX) * (pos[2] - mZ));
-			output.setS01(output.getS01() + (pos[0] - mY) * (pos[1] - mY));
-			output.setS02(output.getS101() + (pos[0] - mY) * (pos[2] - mZ));
-			output.setS12(output.getS011() + (pos[1] - mZ) * (pos[2] - mZ));
+			output.setEntry(0, 0, output.getEntry(0, 0) + (pos[0] - mX) * (pos[0] - mX));
+			output.setEntry(1, 1, output.getEntry(1, 1) + (pos[1] - mX) * (pos[1] - mY));
+			output.setEntry(2, 2, output.getEntry(2, 2) + (pos[2] - mX) * (pos[2] - mZ));
+			output.setEntry(0, 1, output.getEntry(0, 1) + (pos[0] - mY) * (pos[1] - mY));
+			output.setEntry(1, 0, output.getEntry(0, 1));
+			output.setEntry(0, 2, output.getEntry(0, 2) + (pos[0] - mY) * (pos[2] - mZ));
+			output.setEntry(2, 0, output.getEntry(0, 2));
+			output.setEntry(1, 2, output.getEntry(1, 2) + (pos[1] - mZ) * (pos[2] - mZ));
+			output.setEntry(2, 1, output.getEntry(1, 2));
 		}
 
 		final double size = input.size();
-		final double s200 = output.getS200() / size;
-		output.setS00(s200);
-		final double s020 = output.getS020() / size;
-		output.setS11(s020);
-		final double s002 = output.getS002() / size;
-		output.setS22(s002);
-		final double s110 = output.getS01() / size;
-		output.setS01(s110);
-		final double s101 = output.getS101() / size;
-		output.setS02(s101);
-		final double s011 = output.getS011() / size;
-		output.setS12(s011);
+		output.setEntry(0, 0, output.getEntry(0, 0) / size);
+		output.setEntry(0, 1, output.getEntry(0, 1) / size);
+		output.setEntry(0, 2, output.getEntry(0, 2) / size);
+		output.setEntry(1, 0, output.getEntry(1, 0) / size);
+		output.setEntry(1, 1, output.getEntry(1, 1) / size);
+		output.setEntry(1, 2, output.getEntry(1, 2) / size);
+		output.setEntry(2, 0, output.getEntry(2, 0) / size);
+		output.setEntry(2, 1, output.getEntry(2, 1) / size);
+		output.setEntry(2, 2, output.getEntry(2, 2) / size);
 
 		return output;
 	}

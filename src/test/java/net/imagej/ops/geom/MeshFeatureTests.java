@@ -5,22 +5,23 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import net.imagej.Position;
 import net.imagej.ops.Ops;
 import net.imagej.ops.features.AbstractFeatureTest;
 import net.imagej.ops.geom.geom3d.DefaultBoxivityMesh;
 import net.imagej.ops.geom.geom3d.DefaultCompactness;
-import net.imagej.ops.geom.geom3d.DefaultConvexHull3D;
 import net.imagej.ops.geom.geom3d.DefaultConvexityMesh;
+import net.imagej.ops.geom.geom3d.DefaultMainElongation;
 import net.imagej.ops.geom.geom3d.DefaultMarchingCubes;
+import net.imagej.ops.geom.geom3d.DefaultMedianElongation;
 import net.imagej.ops.geom.geom3d.DefaultSizeConvexHullMesh;
 import net.imagej.ops.geom.geom3d.DefaultSizeMesh;
 import net.imagej.ops.geom.geom3d.DefaultSolidityMesh;
-import net.imagej.ops.geom.geom3d.DefaultSpareness;
 import net.imagej.ops.geom.geom3d.DefaultSparenessMesh;
 import net.imagej.ops.geom.geom3d.DefaultSphericity;
 import net.imagej.ops.geom.geom3d.DefaultSurfaceArea;
 import net.imagej.ops.geom.geom3d.DefaultSurfaceAreaConvexHullMesh;
+import net.imagej.ops.geom.geom3d.DefaultVerticesCountConvexHullMesh;
+import net.imagej.ops.geom.geom3d.DefaultVerticesCountMesh;
 import net.imagej.ops.geom.geom3d.DefaultVoxelization3D;
 import net.imagej.ops.geom.geom3d.mesh.DefaultMesh;
 import net.imagej.ops.geom.geom3d.mesh.Facet;
@@ -30,9 +31,7 @@ import net.imagej.ops.geom.geom3d.mesh.Vertex;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.roi.labeling.LabelRegion;
 import net.imglib2.roi.labeling.LabelRegionCursor;
-import net.imglib2.roi.labeling.LabelRegionRandomAccess;
 import net.imglib2.type.logic.BitType;
-import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 
 import org.junit.BeforeClass;
@@ -48,13 +47,13 @@ public class MeshFeatureTests extends AbstractFeatureTest {
 		ROI = createLabelRegion(getTestImage3D(), 1, 255);
 		mesh = getMesh();
 	}
-	
+
 	@Test
 	public void boxivityMesh() {
 		try {
 			ops.run(DefaultBoxivityMesh.class, mesh);
 		} catch (IllegalArgumentException e) {
-			// DefaultSmallestOrientedBoundingBox is not implemented. 
+			// DefaultSmallestOrientedBoundingBox is not implemented.
 		}
 	}
 
@@ -81,7 +80,9 @@ public class MeshFeatureTests extends AbstractFeatureTest {
 
 	@Test
 	public void mainElongation() {
-
+		// formula verified and ground truth computed with matlab
+		assertEquals(Ops.Geometric.Convexity.NAME, 0.251596105039,
+				((DoubleType) ops.run(DefaultMainElongation.class, mesh)).get(), EPSILON);
 	}
 
 	@Test
@@ -108,28 +109,25 @@ public class MeshFeatureTests extends AbstractFeatureTest {
 
 	@Test
 	public void medianElongation() {
-
+		// formula verified and ground truth computed with matlab
+		assertEquals(Ops.Geometric.Convexity.NAME, 0.128824753606,
+				((DoubleType) ops.run(DefaultMedianElongation.class, mesh)).get(), EPSILON);
 	}
-	
-	@Test
-	public void secondMultiVariate3D() {
 
-	}
-	
 	@Test
 	public void sizeConvexHullMesh() {
 		// ground truth computed with matlab
 		assertEquals(Ops.Geometric.SizeConvexHull.NAME, 304.5,
 				((DoubleType) ops.run(DefaultSizeConvexHullMesh.class, mesh)).get(), EPSILON);
 	}
-	
+
 	@Test
 	public void sizeMesh() {
 		// ground truth computed with matlab
-		assertEquals(Ops.Geometric.Size.NAME, 257.5,
-				((DoubleType) ops.run(DefaultSizeMesh.class, mesh)).get(), EPSILON);
+		assertEquals(Ops.Geometric.Size.NAME, 257.5, ((DoubleType) ops.run(DefaultSizeMesh.class, mesh)).get(),
+				EPSILON);
 	}
-	
+
 	@Test
 	public void solidityMesh() {
 		// formula verified and ground truth computed with matlab
@@ -139,8 +137,8 @@ public class MeshFeatureTests extends AbstractFeatureTest {
 
 	@Test
 	public void spareness() {
-		// formula verified 
-		assertEquals(Ops.Geometric.Spareness.NAME, 0,
+		// formula verified
+		assertEquals(Ops.Geometric.Spareness.NAME, 0.983875774303,
 				((DoubleType) ops.run(DefaultSparenessMesh.class, mesh)).get(), EPSILON);
 	}
 
@@ -157,24 +155,29 @@ public class MeshFeatureTests extends AbstractFeatureTest {
 		assertEquals(Ops.Geometric.BoundarySize.NAME, 235.7390893402464,
 				((DoubleType) ops.run(DefaultSurfaceArea.class, mesh)).get(), EPSILON);
 	}
-	
+
 	@Test
 	public void surfaceAreaConvexHull() {
 		// ground truth computed with matlab
-				assertEquals(Ops.Geometric.BoundarySize.NAME, 231.9508788339317,
-						((DoubleType) ops.run(DefaultSurfaceAreaConvexHullMesh.class, mesh)).get(), EPSILON);
+		assertEquals(Ops.Geometric.BoundarySize.NAME, 231.9508788339317,
+				((DoubleType) ops.run(DefaultSurfaceAreaConvexHullMesh.class, mesh)).get(), EPSILON);
 	}
 
 	@Test
 	public void verticesCountConvexHullMesh() {
-
+		// verified with matlab
+		assertEquals(Ops.Geometric.VerticesCountConvexHull.NAME, 57,
+				((DoubleType) ops.run(DefaultVerticesCountConvexHullMesh.class, mesh)).get(), EPSILON);
 	}
 
 	@Test
 	public void verticesCountMesh() {
+		// verified with matlab
+		assertEquals(Ops.Geometric.VerticesCountConvexHull.NAME, 184,
+				((DoubleType) ops.run(DefaultVerticesCountMesh.class, mesh)).get(), EPSILON);
 
 	}
-	
+
 	@Test
 	public void voxelization3D() {
 		// the mesh is verified and created with marching cubes.

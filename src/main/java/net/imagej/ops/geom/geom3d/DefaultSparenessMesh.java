@@ -32,14 +32,15 @@ package net.imagej.ops.geom.geom3d;
 
 import net.imagej.ops.Contingent;
 import net.imagej.ops.Ops;
+import net.imagej.ops.Ops.Geometric.SecondMoment;
 import net.imagej.ops.geom.geom3d.mesh.Mesh;
 import net.imagej.ops.special.function.Functions;
 import net.imagej.ops.special.function.UnaryFunctionOp;
 import net.imagej.ops.special.hybrid.AbstractUnaryHybridCF;
-import net.imglib2.roi.IterableRegion;
-import net.imglib2.type.BooleanType;
 import net.imglib2.type.numeric.real.DoubleType;
 
+import org.apache.commons.math3.linear.EigenDecomposition;
+import org.apache.commons.math3.linear.RealMatrix;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
@@ -50,46 +51,41 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Tim-Oliver Buchholz (University of Konstanz)
  */
-@Plugin(type = Ops.Geometric.Spareness.class,
-	label = "Geometric (3D): Spareness", priority = Priority.VERY_HIGH_PRIORITY)
-public class DefaultSparenessMesh extends
-	AbstractUnaryHybridCF<Mesh, DoubleType> implements
-	Ops.Geometric.Spareness, Contingent
-{
+@Plugin(type = Ops.Geometric.Spareness.class, label = "Geometric (3D): Spareness", priority = Priority.VERY_HIGH_PRIORITY)
+public class DefaultSparenessMesh extends AbstractUnaryHybridCF<Mesh, DoubleType>
+		implements Ops.Geometric.Spareness, Contingent {
 
-	private UnaryFunctionOp<Mesh, DoubleType> mainElongation;
-
-	private UnaryFunctionOp<Mesh, DoubleType> medianElongation;
-
-	private UnaryFunctionOp<Mesh, DefaultCovarianceOf2ndMultiVariate3D> multivar;
+	private UnaryFunctionOp<Mesh, RealMatrix> inertiaTensor;
 
 	private UnaryFunctionOp<Mesh, DoubleType> volume;
 
 	@Override
 	public void initialize() {
-		mainElongation = Functions.unary(ops(), Ops.Geometric.MainElongation.class, DoubleType.class,
-			in());
-		medianElongation = Functions.unary(ops(), Ops.Geometric.MedianElongation.class, DoubleType.class,
-			in());
-		multivar = Functions.unary(ops(), DefaultSecondMultiVariate3DMesh.class,
-			DefaultCovarianceOf2ndMultiVariate3D.class, in());
+		inertiaTensor = Functions.unary(ops(), SecondMoment.class, RealMatrix.class, in());
 		volume = Functions.unary(ops(), Ops.Geometric.Size.class, DoubleType.class, in());
 	}
 
 	@Override
 	public void compute1(final Mesh input, final DoubleType output) {
 
-		double r1 = Math.sqrt(5.0 * multivar.compute1(input).getEigenvalue(0));
-		double r2 = r1 / mainElongation.compute1(input).get();
-		double r3 = r2 / medianElongation.compute1(input).get();
-		System.out.println("r1 " + r1);
-		System.out.println("r2 " + r2);
-		System.out.println("r3 " + r3);
-		double volumeEllipsoid = (4.18879 * r1 * r2 * r3);
+		final RealMatrix it = inertiaTensor.compute1(input);
+		final EigenDecomposition ed = new EigenDecomposition(it);
+
+		final double l1 = ed.getRealEigenvalue(0) - ed.getRealEigenvalue(2) + ed.getRealEigenvalue(1);
+		final double l2 = ed.getRealEigenvalue(0) - ed.getRealEigenvalue(1) + ed.getRealEigenvalue(2);
+		final double l3 = ed.getRealEigenvalue(2) - ed.getRealEigenvalue(0) + ed.getRealEigenvalue(1);
+
+		final double g = 1 / (8 * Math.PI / 15);
+
+		final double a = Math.pow(g * l1 * l1 / Math.sqrt(l2 * l3), 1 / 5d);
+		final double b = Math.pow(g * l2 * l2 / Math.sqrt(l1 * l3), 1 / 5d);
+		final double c = Math.pow(g * l3 * l3 / Math.sqrt(l1 * l2), 1 / 5d);
+
+		double volumeEllipsoid = (4 / 3d * Math.PI * a * b * c);
 
 		output.set(volume.compute1(input).get() / volumeEllipsoid);
 	}
-	
+
 	@Override
 	public DoubleType createOutput(Mesh input) {
 		return new DoubleType();
